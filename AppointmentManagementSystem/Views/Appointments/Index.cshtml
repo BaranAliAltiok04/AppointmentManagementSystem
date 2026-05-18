@@ -1,0 +1,73 @@
+﻿@model IEnumerable<AppointmentManagementSystem.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Randevu Programı";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">📅 Günlük Randevu Programı</h2>
+        <a asp-action="Create" class="btn btn-success btn-lg shadow-sm">➕ Yeni Randevu Ekle</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card shadow border-0">
+            <div class="card-body text-center text-muted py-5 fw-semibold">
+                Önümüzde planlanmış aktif bir randevu kaydı bulunmamaktadır.
+            </div>
+        </div>
+    }
+    else
+    {
+        // Randevuları günlere göre grupluyoruz
+        var günlükGruplar = Model.GroupBy(a => a.AppointmentDate.Date).OrderBy(g => g.Key);
+
+        foreach (var grup in günlükGruplar)
+        {
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0 fw-bold">📆 @grup.Key.ToString("dd MMMM yyyy, dddd")</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4" style="width: 15%;">Saat</th>
+                                <th style="width: 30%;">Müşteri Adı Soyadı</th>
+                                <th style="width: 40%;">Alınacak Hizmetler</th>
+                                <th class="pe-4 text-center" style="width: 15%;">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in grup.OrderBy(a => a.AppointmentDate))
+                            {
+                                <tr>
+                                    <td class="ps-4 text-primary fw-bold" style="font-size: 1.1rem;">
+                                        ⏰ @item.AppointmentDate.ToString("HH:mm")
+                                    </td>
+                                    <td class="fw-bold text-dark">@item.Customer?.FullName</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ServiceNames))
+                                        {
+                                            @foreach (var hzm in item.ServiceNames.Split(", "))
+                                            {
+                                                <span class="badge bg-info text-dark fw-bold px-3 py-2 me-1 mb-1">@hzm</span>
+                                            }
+                                        }
+                                    </td>
+                                    <td class="pe-4 text-center">
+                                        <form asp-action="Cancel" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bu randevuyu iptal etmek istediğinize emin misiniz?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger btn-sm fw-bold px-3 rounded-pill">❌ İptal Et</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    }
+</div>

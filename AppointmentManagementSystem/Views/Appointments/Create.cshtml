@@ -1,0 +1,68 @@
+﻿@model AppointmentManagementSystem.Models.Appointment
+
+@{
+    ViewData["Title"] = "Randevu Oluştur";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-success text-white py-3">
+            <h4 class="mb-0 fw-bold">🚀 Hızlı Randevu Oluşturma Formu</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <h5 class="text-primary fw-bold mb-3">👤 Müşteri Bilgileri</h5>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary">Müşteri Adı</label>
+                    <input name="CustomerFirstName" class="form-control border-2" type="text" placeholder="Örn: Ahmet" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary">Müşteri Soyadı</label>
+                    <input name="CustomerLastName" class="form-control border-2" type="text" placeholder="Örn: Yılmaz" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary">Telefon Numarası</label>
+                    <input name="CustomerPhone" class="form-control border-2" type="tel" placeholder="Örn: 05551112233" required />
+                </div>
+
+                <hr class="my-4">
+
+                <h5 class="text-primary fw-bold mb-3">📅 Randevu Detayları</h5>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-secondary d-block mb-2">Alınacak Hizmetler</label>
+                    <div class="row g-2">
+                        @foreach (var service in ViewBag.Services)
+                        {
+                            <div class="col-6">
+                                <div class="form-check card p-2 border-2 h-100 d-flex align-items-center flex-row shadow-sm">
+                                    <input class="form-check-input ms-1 border-2" type="checkbox" name="selectedServices" value="@service.Id" id="service_@service.Id">
+                                    <label class="form-check-label ms-2 fw-semibold text-dark mb-0" for="service_@service.Id">
+                                        @service.Name
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AppointmentDate" class="form-label fw-bold text-secondary">Randevu Zamanı</label>
+                    <input asp-for="AppointmentDate" class="form-control border-2" type="datetime-local" required />
+                    <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-semibold">İptal</a>
+                    <button type="submit" class="btn btn-success px-5 fw-bold shadow-sm">Randevuyu Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
